@@ -106,6 +106,29 @@ def get_schematic_svg(mode):
 <text x="340" y="25" class="text" fill="#95a5a6">-Z (手前へ) →</text>
 </svg>"""
 
+elif "【外径-6】" in mode:
+        return f"""<svg viewBox="0 0 450 220" xmlns="http://www.w3.org/2000/svg" style="background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6; width: 100%;">
+        {style}
+        <line x1="20" y1="180" x2="430" y2="180" class="centerline" />
+        <text x="360" y="195" class="text" fill="#7f8c8d">中心線 (X=0)</text>
+        
+        <!-- テーパー1(手前) -> 凸アール -> テーパー2(奥) の描画 -->
+        <path d="M 400 160 L 280 100 Q 250 85 220 70 L 100 30" class="shape" />
+        
+        <!-- 補助線と仮想交点 -->
+        <line x1="280" y1="100" x2="250" y2="85" class="assist" />
+        <line x1="220" y1="70" x2="250" y2="85" class="assist" />
+        <circle cx="250" cy="85" r="5" class="point" />
+        <text x="260" y="80" class="text-red">仮想交点 (Xv, Zv)</text>
+        
+        <!-- R(アール)の文字 -->
+        <text x="235" y="115" class="text" fill="#2980b9" font-weight="bold">R (アール)</text>
+        
+        <!-- 方向の文字 -->
+        <text x="20" y="25" class="text" fill="#95a5a6">← +Z (奥へ)</text>
+        <text x="340" y="25" class="text" fill="#95a5a6">-Z (手前へ) →</text>
+        </svg>"""
+
     elif "【内径-1】" in mode:
         return f"""<svg viewBox="0 0 450 220" xmlns="http://www.w3.org/2000/svg" style="background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6; width: 100%;">
 {style}
@@ -215,7 +238,17 @@ def calc_id_taper_to_arc(x_v_dia, z_v, theta_deg, R, r, z_offset_mode):
     z_tc_end = z_c
     z_shift = r if "+Z(奥)側にシフト" in z_offset_mode else (-r if "-Z(手前)側にシフト" in z_offset_mode else 0.0)
     return {"start_x_dia": (x_tc_start + r) * 2, "start_z": z_tc_start + z_shift, "end_x_dia": (x_tc_end + r) * 2, "end_z": z_tc_end + z_shift, "prog_r": r_prog, "g_code": "G03"}
-
+def calc_gaikei_6(x_v_dia, z_v, theta1_deg, theta2_deg, R, r, z_offset_mode):
+    theta1_rad = math.radians(theta1_deg)
+    theta2_rad = math.radians(theta2_deg)
+    R_total = R + r
+    L = R_total * math.tan(abs(theta1_rad - theta2_rad) / 2.0)
+    z_tc_start = z_v - L * math.cos(theta1_rad)
+    x_tc_start_radius = (x_v_dia / 2.0) - (L * math.sin(theta1_rad))
+    z_tc_end = z_v + L * math.cos(theta2_rad)
+    x_tc_end_radius = (x_v_dia / 2.0) + (L * math.sin(theta2_rad))
+    z_shift = r if "+Z(奥)側にシフト" in z_offset_mode else (-r if "-Z(手前)側にシフト" in z_offset_mode else 0.0)
+    return {"start_x_dia": (x_tc_start_radius - r) * 2, "start_z": z_tc_start + z_shift, "end_x_dia": (x_tc_end_radius - r) * 2, "end_z": z_tc_end + z_shift, "prog_r": R_total, "g_code": "G02 / G03"}
 
 # ==========================================
 # 2. 画面表示・UI部分
@@ -234,7 +267,8 @@ if process_type == "外径加工":
             "【外径-2】端面 ⇒ 凸アール ⇒ テーパー",
             "【外径-3】外径ストレート ⇒ 凹アール(谷R) ⇒ テーパー",
             "【外径-4】下りテーパー ⇒ 凹アール ⇒ 上りテーパー (V溝)",
-            "【外径-5】上りテーパー ⇒ 凹アール ⇒ 上りテーパー (段差R)"
+            "【外径-5】上りテーパー ⇒ 凹アール ⇒ 上りテーパー (段差R)",
+            "【外径-6】上りテーパー⇒凸アール⇒上りテーパー",
         ]
     )
 else:
@@ -255,7 +289,7 @@ st.write("")
 col1, col2 = st.columns(2)
 with col1:
     st.subheader("図面の寸法")
-    if "【外径-4】" in mode or "【外径-5】" in mode:
+    if "【外径-4】" in mode or "【外径-5】" in mode or "【外径-6】" in mode:
         st.write("※2つの斜面の仮想交点を入力します")
         x_v = st.number_input("仮想交点 X座標 (直径 φ)", value=4.0000, format="%.4f", step=0.01)
         z_v = st.number_input("仮想交点 Z座標", value=3.7300, format="%.4f", step=0.01)
@@ -294,6 +328,8 @@ if st.button("座標を計算"):
         res = calc_taper_to_arc_to_taper_v(x_v, z_v, theta1, theta2, R, r, z_offset_mode)
     elif "【外径-5】" in mode:
         res = calc_up_to_arc_to_up(x_v, z_v, theta1, theta2, R, r, z_offset_mode)
+    elif "【外径-6】" in mode:
+        res = calc_gaikei_6(x_v, z_v, theta1, theta2, R, r, z_offset_mode)
     elif "【内径-1】" in mode:
         res = calc_id_taper_to_arc(x_v, z_v, theta, R, r, z_offset_mode)
     
