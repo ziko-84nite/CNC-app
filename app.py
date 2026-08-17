@@ -231,17 +231,43 @@ def calc_id_taper_to_arc(x_v_dia, z_v, theta_deg, R, r, z_offset_mode):
     z_tc_end = z_c
     z_shift = r if "+Z(奥)側にシフト" in z_offset_mode else (-r if "-Z(手前)側にシフト" in z_offset_mode else 0.0)
     return {"start_x_dia": (x_tc_start + r) * 2, "start_z": z_tc_start + z_shift, "end_x_dia": (x_tc_end + r) * 2, "end_z": z_tc_end + z_shift, "prog_r": r_prog, "g_code": "G03"}
+
 def calc_gaikei_6(x_v_dia, z_v, theta1_deg, theta2_deg, R, r, z_offset_mode):
     theta1_rad = math.radians(theta1_deg)
     theta2_rad = math.radians(theta2_deg)
-    R_total = R + r
-    L = R_total * math.tan(abs(theta1_rad - theta2_rad) / 2.0)
-    z_tc_start = z_v - L * math.cos(theta1_rad)
-    x_tc_start_radius = (x_v_dia / 2.0) - (L * math.sin(theta1_rad))
-    z_tc_end = z_v + L * math.cos(theta2_rad)
-    x_tc_end_radius = (x_v_dia / 2.0) + (L * math.sin(theta2_rad))
+    
+    # 仮想交点（半径）
+    x_v_rad = x_v_dia / 2.0
+    
+    # アール中心座標の計算（高度な幾何学計算）
+    delta_sin = math.sin(theta1_rad - theta2_rad)
+    if abs(delta_sin) < 1e-9:
+        delta_sin = 1e-9  # エラー回避
+        
+    z_c = z_v + R * (math.cos(theta2_rad) - math.cos(theta1_rad)) / delta_sin
+    x_c_rad = x_v_rad + R * (math.sin(theta2_rad) - math.sin(theta1_rad)) / delta_sin
+    
+    # 刃先Rを考慮したプログラムR（凸アールなので R + r）
+    R_prog = R + r
+    
+    # 工具中心の軌跡の接点
+    z_tc_start = z_c - R_prog * math.sin(theta1_rad)
+    x_tc_start_rad = x_c_rad + R_prog * math.cos(theta1_rad)
+    
+    z_tc_end = z_c - R_prog * math.sin(theta2_rad)
+    x_tc_end_rad = x_c_rad + R_prog * math.cos(theta2_rad)
+    
+    # プログラム座標への変換（Zシフトと直径変換）
     z_shift = r if "+Z(奥)側にシフト" in z_offset_mode else (-r if "-Z(手前)側にシフト" in z_offset_mode else 0.0)
-    return {"start_x_dia": (x_tc_start_radius - r) * 2, "start_z": z_tc_start + z_shift, "end_x_dia": (x_tc_end_radius - r) * 2, "end_z": z_tc_end + z_shift, "prog_r": R_total, "g_code": "G02 / G03"}
+    
+    return {
+        "start_x_dia": (x_tc_start_rad - r) * 2, 
+        "start_z": z_tc_start + z_shift, 
+        "end_x_dia": (x_tc_end_rad - r) * 2, 
+        "end_z": z_tc_end + z_shift, 
+        "prog_r": R_prog, 
+        "g_code": "G02 / G03"
+    }
 
 # ==========================================
 # 2. 画面表示・UI部分
