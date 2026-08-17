@@ -106,7 +106,7 @@ def get_schematic_svg(mode):
 <text x="340" y="25" class="text" fill="#95a5a6">-Z (手前へ) →</text>
 </svg>"""
 
-elif "【外径-6】" in mode:
+    elif "【外径-6】" in mode:
         return f"""<svg viewBox="0 0 450 220" xmlns="http://www.w3.org/2000/svg" style="background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6; width: 100%;">
 {style}
 <line x1="20" y1="180" x2="430" y2="180" class="centerline" />
