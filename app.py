@@ -106,28 +106,20 @@ def get_schematic_svg(mode):
 <text x="340" y="25" class="text" fill="#95a5a6">-Z (手前へ) →</text>
 </svg>"""
 
-    elif "【外径-6】" in mode:
+elif "【外径-6】" in mode:
         return f"""<svg viewBox="0 0 450 220" xmlns="http://www.w3.org/2000/svg" style="background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6; width: 100%;">
-        {style}
-        <line x1="20" y1="180" x2="430" y2="180" class="centerline" />
-        <text x="360" y="195" class="text" fill="#7f8c8d">中心線 (X=0)</text>
-        
-        <!-- テーパー1(手前) -> 凸アール -> テーパー2(奥) の描画 -->
-        <path d="M 400 160 L 280 100 Q 250 85 220 70 L 100 30" class="shape" />
-        
-        <!-- 補助線と仮想交点 -->
-        <line x1="280" y1="100" x2="250" y2="85" class="assist" />
-        <line x1="220" y1="70" x2="250" y2="85" class="assist" />
-        <circle cx="250" cy="85" r="5" class="point" />
-        <text x="260" y="80" class="text-red">仮想交点 (Xv, Zv)</text>
-        
-        <!-- R(アール)の文字 -->
-        <text x="235" y="115" class="text" fill="#2980b9" font-weight="bold">R (アール)</text>
-        
-        <!-- 方向の文字 -->
-        <text x="20" y="25" class="text" fill="#95a5a6">← +Z (奥へ)</text>
-        <text x="340" y="25" class="text" fill="#95a5a6">-Z (手前へ) →</text>
-        </svg>"""
+{style}
+<line x1="20" y1="180" x2="430" y2="180" class="centerline" />
+<text x="360" y="195" class="text" fill="#7f8c8d">中心線 (X=0)</text>
+<path d="M 400 160 L 280 100 Q 250 85 220 70 L 100 30" class="shape" />
+<line x1="280" y1="100" x2="250" y2="85" class="assist" />
+<line x1="220" y1="70" x2="250" y2="85" class="assist" />
+<circle cx="250" cy="85" r="5" class="point" />
+<text x="260" y="80" class="text-red">仮想交点 (Xv, Zv)</text>
+<text x="235" y="115" class="text" fill="#2980b9" font-weight="bold">R (アール)</text>
+<text x="20" y="25" class="text" fill="#95a5a6">← +Z (奥へ)</text>
+<text x="340" y="25" class="text" fill="#95a5a6">-Z (手前へ) →</text>
+</svg>"""
 
     elif "【内径-1】" in mode:
         return f"""<svg viewBox="0 0 450 220" xmlns="http://www.w3.org/2000/svg" style="background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6; width: 100%;">
