@@ -111,12 +111,13 @@ def get_schematic_svg(mode):
 {style}
 <line x1="20" y1="180" x2="430" y2="180" class="centerline" />
 <text x="360" y="195" class="text" fill="#7f8c8d">中心線 (X=0)</text>
-<path d="M 400 160 L 280 100 Q 250 85 220 70 L 100 30" class="shape" />
-<line x1="280" y1="100" x2="250" y2="85" class="assist" />
-<line x1="220" y1="70" x2="250" y2="85" class="assist" />
-<circle cx="250" cy="85" r="5" class="point" />
-<text x="260" y="80" class="text-red">仮想交点 (Xv, Zv)</text>
-<text x="235" y="115" class="text" fill="#2980b9" font-weight="bold">R (アール)</text>
+<path d="M 380 150 L 280 88 Q 250 70 210 64 L 80 44" class="shape" />
+<line x1="280" y1="88" x2="250" y2="70" class="assist" />
+<line x1="210" y1="64" x2="250" y2="70" class="assist" />
+<circle cx="250" cy="70" r="5" class="point" />
+<text x="260" y="65" class="text-red">仮想交点 (Xv, Zv)</text>
+<path d="M 265 92 A 20 20 0 0 1 220 70" stroke="#2980b9" stroke-width="2" fill="none" />
+<text x="240" y="95" class="text" fill="#2980b9" font-weight="bold">R (アール)</text>
 <text x="20" y="25" class="text" fill="#95a5a6">← +Z (奥へ)</text>
 <text x="340" y="25" class="text" fill="#95a5a6">-Z (手前へ) →</text>
 </svg>"""
